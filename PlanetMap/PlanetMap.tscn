@@ -9,11 +9,11 @@ size = Vector2(32, 32)
 [node name="PlanetMap" type="Node2D" unique_id=1615454139]
 script = ExtResource("1_4w114")
 
+[node name="Camera" type="Camera2D" parent="." unique_id=508318021]
+
 [node name="CurrentPlanet" type="Sprite2D" parent="." unique_id=128218115]
 position = Vector2(601, 286)
 texture = SubResource("PlaceholderTexture2D_8jfyb")
-
-[node name="Camera2D" type="Camera2D" parent="CurrentPlanet" unique_id=508318021]
 
 [node name="PlanetInfo" parent="." unique_id=2088689581 instance=ExtResource("3_mr1mo")]
 visible = false
