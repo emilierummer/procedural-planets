@@ -1,7 +1,18 @@
 extends Node
 
+# ========================================================================= #
+
 ## Chance of a planet being generated at a given location (0.1 = 10% chance)
 const PLANET_GENERATION_CHANCE: float = 0.1
+
+## Chance of a planet name having a certain number of syllables ([0.4, 0.3, 0.3] = 40% chance of 1 syllable, 30% chance of 2 syllables, 30% chance of 3 syllables)
+const SYLLABLE_COUNT_CHANCES: Array[float] = [0.25, 0.4, 0.25, 0.1]
+## Chance of a planet name starting with a vowel
+const START_WITH_VOWEL_CHANCE: float = 0.5
+## Chance of a planet name ending with a consonant
+const END_WITH_CONSONANT_CHANCE: float = 0.5
+
+# ========================================================================= #
 
 ## Distance from the edge of the screen to keep planets loaded.
 const VISIBLE_BUFFER: int = 10
@@ -19,7 +30,7 @@ static func generate_planet(position: Vector2) -> Planet:
 
 	var planet = Planet.new()
 	planet.position = position
-	planet.name = "Planet " + str(rng.randi_range(1, 1000))
+	planet.name = generate_planet_name()
 
 	return planet
 
@@ -66,3 +77,31 @@ func update_visible_planets() -> Dictionary:
 			updates["added"].append(planet)
 
 	return updates
+
+
+## Generates a random planet name
+static func generate_planet_name() -> String:
+	var consonants = ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z"]
+	var vowels = ["a", "e", "i", "o", "u"]
+
+	var name = ""
+
+	if rng.randf() < START_WITH_VOWEL_CHANCE:
+		name += vowels[rng.randi_range(0, vowels.size() - 1)]
+	
+	var syllable_roll = rng.randf()
+	var syllable_count = SYLLABLE_COUNT_CHANCES.size() + 1
+	var cumulative_chance = 0.0
+	for i in range(SYLLABLE_COUNT_CHANCES.size()):
+		cumulative_chance += SYLLABLE_COUNT_CHANCES[i]
+		if syllable_roll < cumulative_chance:
+			syllable_count = i + 1
+			break
+	for i in range(syllable_count):
+		name += consonants[rng.randi_range(0, consonants.size() - 1)]
+		name += vowels[rng.randi_range(0, vowels.size() - 1)]
+	
+	if rng.randf() < END_WITH_CONSONANT_CHANCE:
+		name += consonants[rng.randi_range(0, consonants.size() - 1)]
+	
+	return name.capitalize()
