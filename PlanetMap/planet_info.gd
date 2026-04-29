@@ -1,6 +1,7 @@
 extends VBoxContainer
 
 signal start_travel(destination: Planet)
+signal close_planet_info()
 
 var current_planet: Planet = null
 
@@ -9,10 +10,11 @@ var current_planet: Planet = null
 
 func _on_cancel_button_pressed():
     self.hide()
+    close_planet_info.emit()
 
 
 func _on_travel_button_pressed():
-    emit_signal("start_travel", current_planet)
+    start_travel.emit(current_planet)
 
 
 func update_planet_info(planet: Planet):

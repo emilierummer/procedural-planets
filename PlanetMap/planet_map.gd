@@ -5,14 +5,18 @@ const PackedPlanetScene = preload("res://PlanetMap/Planet.tscn")
 const MAX_CAMERA_ZOOM = 12.0
 const MIN_CAMERA_ZOOM = 0.3
 const DEFAULT_CAMERA_SPEED = 100
+const TWEEN_DURATION = 0.5
 
 
-@onready var PlanetInfo = $PlanetInfo
+@onready var PlanetInfo = %PlanetInfo
 @onready var Camera: Camera2D = $Camera
 
 
 ## Stores currently visible planet nodes in the scene. The key is a string `x_y` for the planet's position
 var visible_planets: Dictionary[String, Planet] = {}
+
+## Tracks whether the planet info panel is currently open, used to disable movement and planet clicking when open
+var focused_planet: bool = false
 
 ## Adds a planet node to the scene for the given planet data and stores it in visible_planets
 func _add_visible_planet(planet_data: Planet) -> void:
@@ -45,6 +49,8 @@ func _ready():
 
 
 func _unhandled_input(event):
+	if focused_planet:
+		return # Don't allow movement or planet clicking when a planet is focused
 	if event is InputEventScreenDrag:
 		Camera.global_position -= event.relative / Camera.zoom.x # Adjust drag speed based on zoom level
 	if event is InputEventMagnifyGesture:
@@ -57,6 +63,8 @@ func _unhandled_input(event):
 
 
 func _process(delta):
+	if focused_planet:
+		return # Don't allow movement or planet clicking when a planet is focused
 	var camera_speed = 8 * DEFAULT_CAMERA_SPEED / Camera.zoom.x # Adjust speed based on zoom level
 	if Input.is_action_pressed("MoveUp"):
 		Camera.global_position.y -= camera_speed * delta
@@ -69,4 +77,20 @@ func _process(delta):
 
 
 func _on_planet_clicked(planet: Planet):
+	if focused_planet:
+		return # Don't allow clicking another planet when one is already focused
+	focused_planet = true
+	# Smoothly move camera to planet position and zoom in
+	var camera_tween = get_tree().create_tween()
+	camera_tween.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT).tween_property(Camera, "global_position", planet.position, TWEEN_DURATION)
+	camera_tween.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN).parallel().tween_property(Camera, "zoom", Vector2(MAX_CAMERA_ZOOM, MAX_CAMERA_ZOOM), TWEEN_DURATION)
+	await camera_tween.finished
 	PlanetInfo.update_planet_info(planet)
+
+
+func _on_close_planet_info():
+	# Called when the planet info panel is closed, used to re-enable movement and planet clicking
+	focused_planet = false
+	# Smoothly reset camera zoom
+	var camera_tween = get_tree().create_tween()
+	camera_tween.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT).tween_property(Camera, "zoom", Vector2(1, 1), TWEEN_DURATION)
