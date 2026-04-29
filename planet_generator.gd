@@ -4,6 +4,8 @@ extends Node
 
 ## Chance of a planet being generated at a given location (0.1 = 10% chance)
 const PLANET_GENERATION_CHANCE: float = 0.1
+## Step size of planet generation grid
+const PLANET_GRID_SIZE: int = 100
 
 ## Chance of a planet name having a certain number of syllables ([0.4, 0.3, 0.3] = 40% chance of 1 syllable, 30% chance of 2 syllables, 30% chance of 3 syllables)
 const SYLLABLE_COUNT_CHANCES: Array[float] = [0.25, 0.4, 0.25, 0.1]
@@ -28,6 +30,9 @@ static var planet_cache: Dictionary[String, Planet] = {}
 static func generate_planet(position: Vector2) -> Planet:
 	rng.seed = hash(position)
 
+	if rng.randf() > PLANET_GENERATION_CHANCE:
+		return null # No planet generated at this location
+
 	var planet = Planet.new()
 	planet.position = position
 	planet.name = generate_planet_name()
@@ -47,9 +52,9 @@ func update_visible_planets() -> Dictionary:
 	var screen_bottom_right = Vector2(get_viewport().get_visible_rect().size.x, get_viewport().get_visible_rect().size.y)
 	var world_bottom_right = canvas_transform * screen_bottom_right
 
-	# Round bounds to integers for easier planet generation
-	world_top_left = Vector2(floor(world_top_left.x), floor(world_top_left.y))
-	world_bottom_right = Vector2(ceil(world_bottom_right.x), ceil(world_bottom_right.y))
+	# Round bounds to integers on planet grid
+	world_top_left = Vector2(snapped(world_top_left.x, PLANET_GRID_SIZE), snapped(world_top_left.y, PLANET_GRID_SIZE))
+	world_bottom_right = Vector2(snapped(world_bottom_right.x, PLANET_GRID_SIZE), snapped(world_bottom_right.y, PLANET_GRID_SIZE))
 
 	# Remove planets that are no longer visible
 	for key in planet_cache.keys():
@@ -63,18 +68,14 @@ func update_visible_planets() -> Dictionary:
 			planet_cache.erase(key)
 
 	# Generate new planets that are now visible (or still visible but not in cache)
-	rng.seed = hash(world_top_left) ^ hash(world_bottom_right) # Seed based on visible area for consistency
-	var planet_locations: Array[Vector2] = []
-	for x in range(world_top_left.x, world_bottom_right.x, 100):
-		for y in range(world_top_left.y, world_bottom_right.y, 100):
-			if rng.randf() < PLANET_GENERATION_CHANCE:
-				planet_locations.append(Vector2(x, y))
-	for location in planet_locations:
-		var key = "%d_%d" % [int(location.x), int(location.y)]
-		if not planet_cache.has(key):
-			var planet = generate_planet(location)
-			planet_cache[key] = planet
-			updates["added"].append(planet)
+	for x in range(world_top_left.x, world_bottom_right.x, PLANET_GRID_SIZE):
+		for y in range(world_top_left.y, world_bottom_right.y, PLANET_GRID_SIZE):
+			var key = "%d_%d" % [x, y]
+			if not planet_cache.has(key):
+				var planet = generate_planet(Vector2(x, y))
+				if planet != null:
+					planet_cache[key] = planet
+					updates["added"].append(planet)
 
 	return updates
 

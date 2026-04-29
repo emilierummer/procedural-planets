@@ -36,16 +36,19 @@ func _remove_visible_planet(planet_data: Planet) -> void:
 		visible_planets.erase(key)
 
 
-func _ready():
-	# Position camera over current planet
-	Camera.global_position = $CurrentPlanet.global_position
-
-	# Get original planets	
+func _update_visible_planets() -> void:
 	var updates = PlanetGenerator.update_visible_planets()
 	for planet in updates["added"]:
 		_add_visible_planet(planet)
 	for planet in updates["removed"]:
 		_remove_visible_planet(planet)
+
+
+func _ready():
+	# Position camera over current planet
+	Camera.global_position = $CurrentPlanet.global_position
+	# Get original planets
+	_update_visible_planets()
 
 
 func _unhandled_input(event):
@@ -60,6 +63,8 @@ func _unhandled_input(event):
 		if new_zoom != 0:
 			Camera.zoom.x = new_zoom
 			Camera.zoom.y = new_zoom
+	
+	_update_visible_planets()
 
 
 func _process(delta):
@@ -74,6 +79,8 @@ func _process(delta):
 		Camera.global_position.x -= camera_speed * delta
 	if Input.is_action_pressed("MoveRight"):
 		Camera.global_position.x += camera_speed * delta
+
+	_update_visible_planets()
 
 
 func _on_planet_clicked(planet: Planet):
