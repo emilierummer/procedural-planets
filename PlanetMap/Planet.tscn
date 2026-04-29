@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://clbrp1qhiungb"]
+
+[ext_resource type="Script" uid="uid://bwcgnifionyno" path="res://PlanetMap/planet.gd" id="1_5a1ib"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_8jfyb"]
+size = Vector2(32, 32)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4w114"]
+radius = 16.124516
+
+[node name="Planet" type="Area2D" unique_id=1632332478]
+script = ExtResource("1_5a1ib")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=401677625]
+texture = SubResource("PlaceholderTexture2D_8jfyb")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=176961116]
+shape = SubResource("CircleShape2D_4w114")
