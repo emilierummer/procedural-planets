@@ -24,6 +24,24 @@ func _add_visible_planet(planet_data: Planet) -> void:
 	var planet = PackedPlanetScene.instantiate()
 	planet.position = planet_data.position
 	planet.name = planet_data.name
+	var shader_seed = float(abs(hash(planet_data.position)) % 1000000) / 1000000.0
+	var sprite = planet.get_node("Sprite2D") as Sprite2D
+	sprite.material.set_shader_parameter("rand_seed", shader_seed)
+	sprite.material.set_shader_parameter("atmosphere_color", planet_data.atmosphere_color)
+	sprite.material.set_shader_parameter("cloud_cover", planet_data.cloud_cover)
+	sprite.material.set_shader_parameter("cloud_density", planet_data.cloud_density)
+	sprite.material.set_shader_parameter("cloud_color", planet_data.cloud_color)
+	sprite.material.set_shader_parameter("land_cover", planet_data.land_cover)
+	sprite.material.set_shader_parameter("land_color_low", planet_data.land_color_low)
+	sprite.material.set_shader_parameter("land_color_high", planet_data.land_color_high)
+	sprite.material.set_shader_parameter("elevation_frequency", planet_data.elevation_frequency)
+	sprite.material.set_shader_parameter("elevation_strength", planet_data.elevation_strength)
+	sprite.material.set_shader_parameter("elevation_contrast", planet_data.elevation_contrast)
+	sprite.material.set_shader_parameter("ocean_color_deep", planet_data.ocean_color_deep)
+	sprite.material.set_shader_parameter("ocean_color_shallow", planet_data.ocean_color_shallow)
+	sprite.material.set_shader_parameter("ocean_average_depth", planet_data.ocean_average_depth)
+	sprite.material.set_shader_parameter("ocean_depth_variation", planet_data.ocean_depth_variation)
+	sprite.material.set_shader_parameter("ocean_depth_contrast", planet_data.ocean_depth_contrast)
 	planet.connect("planet_clicked", _on_planet_clicked)
 	add_child(planet)
 	visible_planets[planet_key] = planet
@@ -45,8 +63,6 @@ func _update_visible_planets() -> void:
 
 
 func _ready():
-	# Position camera over current planet
-	Camera.global_position = $CurrentPlanet.global_position
 	# Get original planets
 	_update_visible_planets()
 

@@ -33,6 +33,22 @@ static func generate_planet(position: Vector2) -> Planet:
 	var planet = Planet.new()
 	planet.position = position
 	planet.name = generate_planet_name()
+	var shader_params = generate_planet_shader_params()
+	planet.atmosphere_color = shader_params["atmosphere_color"]
+	planet.cloud_cover = shader_params["cloud_cover"]
+	planet.cloud_density = shader_params["cloud_density"]
+	planet.cloud_color = shader_params["cloud_color"]
+	planet.land_cover = shader_params["land_cover"]
+	planet.land_color_low = shader_params["land_color_low"]
+	planet.land_color_high = shader_params["land_color_high"]
+	planet.elevation_frequency = shader_params["elevation_frequency"]
+	planet.elevation_strength = shader_params["elevation_strength"]
+	planet.elevation_contrast = shader_params["elevation_contrast"]
+	planet.ocean_color_deep = shader_params["ocean_color_deep"]
+	planet.ocean_color_shallow = shader_params["ocean_color_shallow"]
+	planet.ocean_average_depth = shader_params["ocean_average_depth"]
+	planet.ocean_depth_variation = shader_params["ocean_depth_variation"]
+	planet.ocean_depth_contrast = shader_params["ocean_depth_contrast"]
 
 	return planet
 
@@ -114,3 +130,28 @@ static func generate_planet_name() -> String:
 		planet_name += consonants[rng.randi_range(0, consonants.size() - 1)]
 	
 	return planet_name.capitalize()
+
+
+static func generate_planet_shader_params() -> Dictionary:
+	var params: Dictionary = {}	
+
+	params["atmosphere_color"] = Color(0.55, 0.78, 1.0)
+
+	params["cloud_cover"] = rng.randf()
+	params["cloud_density"] = rng.randf()
+	params["cloud_color"] = Color(0.98, 0.96, 0.98)
+	
+	params["land_cover"] = rng.randf()
+	params["land_color_low"] = Color(0.20, 0.34, 0.15)
+	params["land_color_high"] = Color(0.52, 0.46, 0.22)
+	params["elevation_frequency"] = rng.randf_range(2.0, 16.0)
+	params["elevation_strength"] = rng.randf_range(0.0, 2.0)
+	params["elevation_contrast"] = rng.randf_range(0.4, 3.0)
+	
+	params["ocean_color_deep"] = Color(0.07, 0.12, 0.24)
+	params["ocean_color_shallow"] = Color(0.11, 0.26, 0.39)
+	params["ocean_average_depth"] = rng.randf()
+	params["ocean_depth_variation"] = rng.randf()
+	params["ocean_depth_contrast"] = rng.randf_range(0.4, 3.0)
+	
+	return params
