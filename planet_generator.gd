@@ -14,6 +14,25 @@ const START_WITH_VOWEL_CHANCE: float = 0.5
 ## Chance of a planet name ending with a consonant
 const END_WITH_CONSONANT_CHANCE: float = 0.5
 
+## Min value for planet color luminance, used to ensure generated planets aren't too dark
+const PLANET_COLOR_LUMINANCE_MIN: float = 0.35
+## Max value for planet color luminance, used to ensure generated planets aren't too light
+const PLANET_COLOR_LUMINANCE_MAX: float = 0.55
+## Min saturation for planet colors, used to ensure generated planets aren't too dull
+const PLANET_COLOR_SATURATION_MIN: float = 0.3
+## Max saturation for planet colors, used to ensure generated planets aren't too vibrant
+const PLANET_COLOR_SATURATION_MAX: float = 0.7
+## Max hue shift for height of land colors, used to add variety while keeping colors cohesive
+const PLANET_COLOR_HUE_SHIFT: float = 0.2
+## Max luminance shift for height of land and ocean colors, used to add variety while keeping colors cohesive
+const PLANET_COLOR_LUMINANCE_SHIFT: float = 0.1
+## Min hue shift for oceans compared to land, used to ensure ocean colors are distinct from land colors
+const PLANET_OCEAN_HUE_SHIFT_MIN: float = 0.25
+## Max hue shift for oceans compared to land, used to ensure ocean colors are distinct from land colors
+const PLANET_OCEAN_HUE_SHIFT_MAX: float = 0.75
+## Max hue shift for depth of ocean colors, used to add variety while keeping colors cohesive
+const OCEAN_COLOR_HUE_SHIFT: float = 0.1
+
 # ========================================================================= #
 
 static var rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -135,21 +154,55 @@ static func generate_planet_name() -> String:
 static func generate_planet_shader_params() -> Dictionary:
 	var params: Dictionary = {}	
 
-	params["atmosphere_color"] = Color(0.55, 0.78, 1.0)
+	# Randomly generate base land color
+	var land_color_low = Color.from_ok_hsl(
+		rng.randf(), 
+		rng.randf_range(PLANET_COLOR_SATURATION_MIN, PLANET_COLOR_SATURATION_MAX), 
+		rng.randf_range(PLANET_COLOR_LUMINANCE_MIN, PLANET_COLOR_LUMINANCE_MAX)
+	)
+	# Hue shift and lighten land color to get high land color
+	var land_color_high = Color.from_ok_hsl(
+		fmod(land_color_low.ok_hsl_h + rng.randf_range(-PLANET_COLOR_HUE_SHIFT, PLANET_COLOR_HUE_SHIFT), 1.0),
+		land_color_low.ok_hsl_s,
+		min(land_color_low.ok_hsl_l + rng.randf_range(0.05, PLANET_COLOR_LUMINANCE_SHIFT), 1.0)
+	)
+	# Hue shift land colors to get ocean colors
+	var ocean_hue_shift = rng.randf_range(PLANET_OCEAN_HUE_SHIFT_MIN, PLANET_OCEAN_HUE_SHIFT_MAX)
+	var ocean_color_shallow = Color.from_ok_hsl(
+		fmod(land_color_low.ok_hsl_h + ocean_hue_shift, 1.0),
+		land_color_low.ok_hsl_s,
+		max(land_color_low.ok_hsl_l - rng.randf_range(0.05, PLANET_COLOR_LUMINANCE_SHIFT), 0.0)
+	)
+	var ocean_color_deep = Color.from_ok_hsl(
+		fmod(ocean_color_shallow.ok_hsl_h + rng.randf_range(-OCEAN_COLOR_HUE_SHIFT, OCEAN_COLOR_HUE_SHIFT), 1.0),
+		ocean_color_shallow.ok_hsl_s,
+		min(ocean_color_shallow.ok_hsl_l - rng.randf_range(0.05, PLANET_COLOR_LUMINANCE_SHIFT), 1.0)
+	)
+	# Mix land and ocean color to get atmosphere color
+	var land_cover = rng.randf()
+	var atmosphere_color = ocean_color_shallow.lerp(land_color_low, land_cover)
+	# Lighten atmosphere color to get cloud color
+	var cloud_color = Color.from_ok_hsl(
+		atmosphere_color.ok_hsl_h,
+		atmosphere_color.ok_hsl_s,
+		randf_range(0.9, 1.0)
+	)
+
+	params["atmosphere_color"] = atmosphere_color
 
 	params["cloud_cover"] = rng.randf()
 	params["cloud_density"] = rng.randf()
-	params["cloud_color"] = Color(0.98, 0.96, 0.98)
+	params["cloud_color"] = cloud_color
 	
-	params["land_cover"] = rng.randf()
-	params["land_color_low"] = Color(0.20, 0.34, 0.15)
-	params["land_color_high"] = Color(0.52, 0.46, 0.22)
+	params["land_cover"] = land_cover
+	params["land_color_low"] = land_color_low
+	params["land_color_high"] = land_color_high
 	params["elevation_frequency"] = rng.randf_range(2.0, 16.0)
 	params["elevation_strength"] = rng.randf_range(0.0, 2.0)
 	params["elevation_contrast"] = rng.randf_range(0.4, 3.0)
 	
-	params["ocean_color_deep"] = Color(0.07, 0.12, 0.24)
-	params["ocean_color_shallow"] = Color(0.11, 0.26, 0.39)
+	params["ocean_color_deep"] = ocean_color_deep
+	params["ocean_color_shallow"] = ocean_color_shallow
 	params["ocean_average_depth"] = rng.randf()
 	params["ocean_depth_variation"] = rng.randf()
 	params["ocean_depth_contrast"] = rng.randf_range(0.4, 3.0)
