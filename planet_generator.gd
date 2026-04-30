@@ -85,10 +85,10 @@ static func generate_planet_name() -> String:
 	var consonants = ["b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "v", "w", "z"]
 	var vowels = ["a", "e", "i", "o", "u"]
 
-	var name = ""
+	var planet_name = ""
 
 	if rng.randf() < START_WITH_VOWEL_CHANCE:
-		name += vowels[rng.randi_range(0, vowels.size() - 1)]
+		planet_name += vowels[rng.randi_range(0, vowels.size() - 1)]
 	
 	var syllable_roll = rng.randf()
 	var syllable_count = SYLLABLE_COUNT_CHANCES.size() + 1
@@ -99,10 +99,10 @@ static func generate_planet_name() -> String:
 			syllable_count = i + 1
 			break
 	for i in range(syllable_count):
-		name += consonants[rng.randi_range(0, consonants.size() - 1)]
-		name += vowels[rng.randi_range(0, vowels.size() - 1)]
+		planet_name += consonants[rng.randi_range(0, consonants.size() - 1)]
+		planet_name += vowels[rng.randi_range(0, vowels.size() - 1)]
 	
 	if rng.randf() < END_WITH_CONSONANT_CHANCE:
-		name += consonants[rng.randi_range(0, consonants.size() - 1)]
+		planet_name += consonants[rng.randi_range(0, consonants.size() - 1)]
 	
-	return name.capitalize()
+	return planet_name.capitalize()
