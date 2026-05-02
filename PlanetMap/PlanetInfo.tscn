@@ -2,29 +2,51 @@
 
 [ext_resource type="Script" uid="uid://nahlkhsoibq0" path="res://PlanetMap/planet_info.gd" id="1_75aki"]
 
-[node name="PlanetInfo" type="VBoxContainer" unique_id=2088689581]
+[node name="PlanetInfo" type="PanelContainer" unique_id=2121761653]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-alignment = 1
 script = ExtResource("1_75aki")
 
-[node name="PlanetNameLabel" type="Label" parent="." unique_id=1814742032]
-layout_mode = 2
-text = "Planet Name"
-
-[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=124629533]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=447471114]
 layout_mode = 2
 
-[node name="CancelButton" type="Button" parent="HBoxContainer" unique_id=291344784]
+[node name="PlanetNameLabel" type="Label" parent="VBoxContainer" unique_id=1814742032]
+layout_mode = 2
+text = "Earth"
+
+[node name="LandCoverLabel" type="Label" parent="VBoxContainer" unique_id=934084126]
+layout_mode = 2
+text = "40% Land Cover"
+
+[node name="OceanDepthLabel" type="Label" parent="VBoxContainer" unique_id=1788795706]
+layout_mode = 2
+text = "Deep Oceans"
+
+[node name="TerrainLabel" type="Label" parent="VBoxContainer" unique_id=1175422867]
+layout_mode = 2
+text = "Flatlands"
+
+[node name="TemperatureLabel" type="Label" parent="VBoxContainer" unique_id=1851436468]
+layout_mode = 2
+text = "Cold"
+
+[node name="GravityLabel" type="Label" parent="VBoxContainer" unique_id=2006195851]
+layout_mode = 2
+text = "1Gs Gravity"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=124629533]
+layout_mode = 2
+
+[node name="CancelButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=291344784]
 layout_mode = 2
 text = "Cancel"
 
-[node name="TravelButton" type="Button" parent="HBoxContainer" unique_id=533330495]
+[node name="TravelButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=533330495]
 layout_mode = 2
 text = "Travel"
 
-[connection signal="pressed" from="HBoxContainer/CancelButton" to="." method="_on_cancel_button_pressed"]
-[connection signal="pressed" from="HBoxContainer/TravelButton" to="." method="_on_travel_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/CancelButton" to="." method="_on_cancel_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/TravelButton" to="." method="_on_travel_button_pressed"]

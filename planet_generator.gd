@@ -52,7 +52,10 @@ static func generate_planet(position: Vector2) -> Planet:
 	var planet = Planet.new()
 	planet.position = position
 	planet.name = generate_planet_name()
-	var shader_params = generate_planet_shader_params()
+	planet.temperature = rng.randf_range(-100.0, 100.0)
+	planet.planet_gravity = rng.randf_range(0.0, 5.0)
+
+	var shader_params = generate_planet_shader_params(planet.temperature, planet.planet_gravity)
 	planet.atmosphere_color = shader_params["atmosphere_color"]
 	planet.cloud_cover = shader_params["cloud_cover"]
 	planet.cloud_density = shader_params["cloud_density"]
@@ -151,12 +154,15 @@ static func generate_planet_name() -> String:
 	return planet_name.capitalize()
 
 
-static func generate_planet_shader_params() -> Dictionary:
+static func generate_planet_shader_params(planet_temperature: float, planet_gravity: float) -> Dictionary:
 	var params: Dictionary = {}	
+
+	# Get planet hue range based on temperature so that planets with similar temperatures have similar colors
+	var temp_hue_range = Planet.get_temperature_hue_range(planet_temperature)
 
 	# Randomly generate base land color
 	var land_color_low = Color.from_ok_hsl(
-		rng.randf(), 
+		rng.randf_range(temp_hue_range[0], temp_hue_range[1]), 
 		rng.randf_range(PLANET_COLOR_SATURATION_MIN, PLANET_COLOR_SATURATION_MAX), 
 		rng.randf_range(PLANET_COLOR_LUMINANCE_MIN, PLANET_COLOR_LUMINANCE_MAX)
 	)
@@ -188,6 +194,9 @@ static func generate_planet_shader_params() -> Dictionary:
 		randf_range(0.9, 1.0)
 	)
 
+	# Get parameter to divide elevations by based on gravity, so that higher gravity planets tend to have flatter terrain and lower gravity planets tend to have more varied terrain
+	var gravity_factor = max(planet_gravity / 2.0, 0.1) # Avoid dividing by zero or very small numbers
+
 	params["atmosphere_color"] = atmosphere_color
 
 	params["cloud_cover"] = rng.randf()
@@ -197,14 +206,14 @@ static func generate_planet_shader_params() -> Dictionary:
 	params["land_cover"] = land_cover
 	params["land_color_low"] = land_color_low
 	params["land_color_high"] = land_color_high
-	params["elevation_frequency"] = rng.randf_range(2.0, 16.0)
-	params["elevation_strength"] = rng.randf_range(0.0, 2.0)
-	params["elevation_contrast"] = rng.randf_range(0.4, 3.0)
+	params["elevation_frequency"] = rng.randf_range(2.0, 16.0) / gravity_factor
+	params["elevation_strength"] = rng.randf_range(0.0, 2.0) / gravity_factor
+	params["elevation_contrast"] = rng.randf_range(0.4, 3.0) / gravity_factor
 	
 	params["ocean_color_deep"] = ocean_color_deep
 	params["ocean_color_shallow"] = ocean_color_shallow
-	params["ocean_average_depth"] = rng.randf()
-	params["ocean_depth_variation"] = rng.randf()
-	params["ocean_depth_contrast"] = rng.randf_range(0.4, 3.0)
+	params["ocean_average_depth"] = rng.randf() / gravity_factor
+	params["ocean_depth_variation"] = rng.randf() / gravity_factor
+	params["ocean_depth_contrast"] = rng.randf_range(0.4, 3.0) / gravity_factor
 	
 	return params

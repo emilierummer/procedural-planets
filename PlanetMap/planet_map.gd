@@ -27,21 +27,11 @@ func _add_visible_planet(planet_data: Planet) -> void:
 	var shader_seed = float(abs(hash(planet_data.position)) % 1000000) / 1000000.0
 	var sprite = planet.get_node("Sprite2D") as Sprite2D
 	sprite.material.set_shader_parameter("rand_seed", shader_seed)
-	sprite.material.set_shader_parameter("atmosphere_color", planet_data.atmosphere_color)
-	sprite.material.set_shader_parameter("cloud_cover", planet_data.cloud_cover)
-	sprite.material.set_shader_parameter("cloud_density", planet_data.cloud_density)
-	sprite.material.set_shader_parameter("cloud_color", planet_data.cloud_color)
-	sprite.material.set_shader_parameter("land_cover", planet_data.land_cover)
-	sprite.material.set_shader_parameter("land_color_low", planet_data.land_color_low)
-	sprite.material.set_shader_parameter("land_color_high", planet_data.land_color_high)
-	sprite.material.set_shader_parameter("elevation_frequency", planet_data.elevation_frequency)
-	sprite.material.set_shader_parameter("elevation_strength", planet_data.elevation_strength)
-	sprite.material.set_shader_parameter("elevation_contrast", planet_data.elevation_contrast)
-	sprite.material.set_shader_parameter("ocean_color_deep", planet_data.ocean_color_deep)
-	sprite.material.set_shader_parameter("ocean_color_shallow", planet_data.ocean_color_shallow)
-	sprite.material.set_shader_parameter("ocean_average_depth", planet_data.ocean_average_depth)
-	sprite.material.set_shader_parameter("ocean_depth_variation", planet_data.ocean_depth_variation)
-	sprite.material.set_shader_parameter("ocean_depth_contrast", planet_data.ocean_depth_contrast)
+	for param in ["atmosphere_color", "cloud_cover", "cloud_density", "cloud_color", "land_cover", "land_color_low", "land_color_high", "elevation_frequency", "elevation_strength", "elevation_contrast", "ocean_color_deep", "ocean_color_shallow", "ocean_average_depth", "ocean_depth_variation", "ocean_depth_contrast"]:
+		sprite.material.set_shader_parameter(param, planet_data.get(param))
+		planet.set(param, planet_data.get(param)) # Store shader parameters on the planet node for later use in the planet info panel
+	planet.temperature = planet_data.temperature
+	planet.planet_gravity = planet_data.planet_gravity
 	planet.connect("planet_clicked", _on_planet_clicked)
 	add_child(planet)
 	visible_planets[planet_key] = planet
