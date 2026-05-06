@@ -21,9 +21,11 @@ var focused_planet: bool = false
 ## Adds a planet node to the scene for the given planet data and stores it in visible_planets
 func _add_visible_planet(planet_data: Planet) -> void:
 	var planet_key = "%d_%d" % [int(planet_data.position.x), int(planet_data.position.y)]
-	var planet = PackedPlanetScene.instantiate()
+	var planet: Area2D = PackedPlanetScene.instantiate()
 	planet.position = planet_data.position
+	planet.position += planet_data.position_offset
 	planet.name = planet_data.name
+	planet.scale = Vector2(planet_data.planet_size, planet_data.planet_size)
 	var shader_seed = float(abs(hash(planet_data.position)) % 1000000) / 1000000.0
 	var sprite = planet.get_node("Sprite2D") as Sprite2D
 	sprite.material.set_shader_parameter("rand_seed", shader_seed)

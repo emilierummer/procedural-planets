@@ -6,6 +6,14 @@ extends Node
 const PLANET_GENERATION_CHANCE: float = 0.1
 ## Step size of planet generation grid
 const PLANET_GRID_SIZE: int = 100
+## Max variance in planet position
+const PLANET_POSITION_VARIANCE: float = 25.0
+## Min size of planet sprite (relative to a 32px base size)
+const PLANET_SIZE_MIN: float = 0.5
+## Max size of planet sprite (relative to a 32px base size)
+const PLANET_SIZE_MAX: float = 2.0
+## Variance of planet sizes, so that not all planets with the same gravity are the same size
+const PLANET_SIZE_VARIANCE: float = 0.3
 
 ## Chance of a planet name having a certain number of syllables ([0.4, 0.3, 0.3] = 40% chance of 1 syllable, 30% chance of 2 syllables, 30% chance of 3 syllables)
 const SYLLABLE_COUNT_CHANCES: Array[float] = [0.25, 0.4, 0.25, 0.1]
@@ -51,9 +59,22 @@ static func generate_planet(position: Vector2) -> Planet:
 
 	var planet = Planet.new()
 	planet.position = position
+	planet.position_offset = Vector2(
+		rng.randf_range(-PLANET_POSITION_VARIANCE, PLANET_POSITION_VARIANCE),
+		rng.randf_range(-PLANET_POSITION_VARIANCE, PLANET_POSITION_VARIANCE)
+	)
 	planet.name = generate_planet_name()
 	planet.temperature = rng.randf_range(-100.0, 100.0)
 	planet.planet_gravity = rng.randf_range(0.0, 5.0)
+
+	# Higher gravity leads to a smaller planet size
+	var gravity_size_min = PLANET_SIZE_MIN + PLANET_SIZE_VARIANCE
+	var gravity_size_max = PLANET_SIZE_MAX - PLANET_SIZE_VARIANCE
+	var gravity_size = gravity_size_max - (planet.planet_gravity / 5.0) * (gravity_size_max - gravity_size_min)
+	planet.planet_size = rng.randf_range(
+		max(gravity_size - PLANET_SIZE_VARIANCE, PLANET_SIZE_MIN),
+		min(gravity_size + PLANET_SIZE_VARIANCE, PLANET_SIZE_MAX)
+	)
 
 	var shader_params = generate_planet_shader_params(planet.temperature, planet.planet_gravity)
 	planet.atmosphere_color = shader_params["atmosphere_color"]

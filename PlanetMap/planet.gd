@@ -26,6 +26,9 @@ var ocean_depth_contrast: float
 var temperature: float # Range -400.0 to 900.0, representing average surface temperature in Fahrenheit
 var planet_gravity: float # Range 0.0 to 5.0, where 1.0 is Earth-like gravity, 0.0 is no gravity, and 5.0 is very high gravity
 
+var position_offset: Vector2 # Offset from the planet's grid position, used for visual variation
+var planet_size: float # Range 0.5 to 2.0, representing the size of the planet sprite (relative to a 32px base size)
+
 # ============ STATIC CONVERSIONS ============ #
 
 ## Get a human-readable temperature label based on the planet's temperature value
