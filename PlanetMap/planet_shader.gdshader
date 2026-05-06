@@ -1,3 +1,4 @@
+// TODO: Mostly AI generated, come back and verify this better once I learn more about shaders
 shader_type canvas_item;
 
 uniform float rand_seed: hint_range(0.0, 1.0, 0.01);
