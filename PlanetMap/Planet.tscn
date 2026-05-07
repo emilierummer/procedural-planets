@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://clbrp1qhiungb"]
+
+[ext_resource type="Script" uid="uid://bwcgnifionyno" path="res://PlanetMap/planet.gd" id="1_5a1ib"]
+[ext_resource type="Shader" uid="uid://bpm8505mr6elt" path="res://PlanetMap/planet_shader.gdshader" id="2_l6js0"]
+[ext_resource type="Texture2D" uid="uid://dl1gq37hrns13" path="res://PlanetMap/blank_planet.png" id="2_whag7"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4w114"]
+radius = 16.124516
+
+[sub_resource type="Gradient" id="Gradient_l6js0"]
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_bb6t7"]
+gradient = SubResource("Gradient_l6js0")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bb6t7"]
+resource_local_to_scene = true
+shader = ExtResource("2_l6js0")
+shader_parameter/rand_seed = 0.0
+shader_parameter/gradient = SubResource("GradientTexture1D_bb6t7")
+
+[node name="Planet" type="Area2D" unique_id=1632332478]
+script = ExtResource("1_5a1ib")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=176961116]
+shape = SubResource("CircleShape2D_4w114")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=401677625]
+material = SubResource("ShaderMaterial_bb6t7")
+texture = ExtResource("2_whag7")

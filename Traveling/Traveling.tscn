@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://c2vf101j371o8"]
+
+[ext_resource type="Script" uid="uid://cnwcijohl0wfr" path="res://Traveling/traveling.gd" id="1_demh6"]
+
+[node name="Traveling" type="Control" unique_id=1197626873]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_demh6")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=267728972]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -25.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=664533164]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Traveling..."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TimeRemaining" type="Label" parent="VBoxContainer" unique_id=1606637053]
+layout_mode = 2
+text = "60s remaining"
+horizontal_alignment = 1
+
+[node name="Timer" type="Timer" parent="." unique_id=2025405400]
+wait_time = 5.0
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
