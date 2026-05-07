@@ -6,6 +6,8 @@ extends Node
 const PLANET_GENERATION_CHANCE: float = 0.1
 ## Step size of planet generation grid
 const PLANET_GRID_SIZE: int = 100
+## Extra world-space margin around the viewport used to preload and retain planets before they enter or leave the screen
+const PLANET_CACHE_MARGIN: int = PLANET_GRID_SIZE * 2
 ## Max variance in planet position
 const PLANET_POSITION_VARIANCE: float = 25.0
 ## Min size of planet sprite (relative to a 32px base size)
@@ -116,11 +118,11 @@ func update_visible_planets() -> Dictionary:
 		world_camera_center.y + world_camera_size.y / 2
 	)
 
-	# Round bounds to integers on planet grid
-	world_top_left.x = snapped(world_top_left.x, PLANET_GRID_SIZE)
-	world_top_left.y = snapped(world_top_left.y, PLANET_GRID_SIZE)
-	world_bottom_right.x = snapped(world_bottom_right.x, PLANET_GRID_SIZE)
-	world_bottom_right.y = snapped(world_bottom_right.y, PLANET_GRID_SIZE)
+	# Round bounds to integers on planet grid (and keep a small margin around the edges to preload planets before they enter the screen and keep them a bit after they leave the screen)
+	world_top_left.x = snapped(world_top_left.x, PLANET_GRID_SIZE) - PLANET_CACHE_MARGIN
+	world_top_left.y = snapped(world_top_left.y, PLANET_GRID_SIZE) - PLANET_CACHE_MARGIN
+	world_bottom_right.x = snapped(world_bottom_right.x, PLANET_GRID_SIZE) + PLANET_CACHE_MARGIN
+	world_bottom_right.y = snapped(world_bottom_right.y, PLANET_GRID_SIZE) + PLANET_CACHE_MARGIN
 
 	# Remove planets that are no longer visible
 	for key in planet_cache.keys():
@@ -135,8 +137,8 @@ func update_visible_planets() -> Dictionary:
 			planet_cache.erase(key)
 
 	# Generate new planets that are now visible (or still visible but not in cache)
-	for x in range(world_top_left.x, world_bottom_right.x, PLANET_GRID_SIZE):
-		for y in range(world_top_left.y, world_bottom_right.y, PLANET_GRID_SIZE):
+	for x in range(int(world_top_left.x) - PLANET_GRID_SIZE, int(world_bottom_right.x) + PLANET_GRID_SIZE, PLANET_GRID_SIZE):
+		for y in range(int(world_top_left.y) - PLANET_GRID_SIZE, int(world_bottom_right.y) + PLANET_GRID_SIZE, PLANET_GRID_SIZE):
 			var key = "%d_%d" % [x, y]
 			if not planet_cache.has(key):
 				var planet = generate_planet(Vector2(x, y))
