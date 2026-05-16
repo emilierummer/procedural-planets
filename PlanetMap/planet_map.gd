@@ -10,7 +10,11 @@ const TWEEN_DURATION = 0.5
 
 @onready var PlanetInfo = %PlanetInfo
 @onready var Camera: Camera2D = $Camera
+@onready var Ship = $Ship
 
+
+## Tracks if the camera is tracking the ship
+var camera_tracking_ship: bool = true
 
 ## Stores currently visible planet nodes in the scene. The key is a string `x_y` for the planet's position
 var visible_planets: Dictionary[String, Planet] = {}
@@ -64,6 +68,7 @@ func _unhandled_input(event):
 		return # Don't allow movement or planet clicking when a planet is focused
 	if event is InputEventScreenDrag:
 		Camera.global_position -= event.relative / Camera.zoom.x # Adjust drag speed based on zoom level
+		camera_tracking_ship = false # Stop tracking ship when user drags the map
 	if event is InputEventMagnifyGesture:
 		var new_zoom = Camera.zoom.x
 		new_zoom *= event.factor
@@ -78,15 +83,23 @@ func _unhandled_input(event):
 func _process(delta):
 	if focused_planet:
 		return # Don't allow movement or planet clicking when a planet is focused
+
 	var camera_speed = 8 * DEFAULT_CAMERA_SPEED / Camera.zoom.x # Adjust speed based on zoom level
 	if Input.is_action_pressed("MoveUp"):
 		Camera.global_position.y -= camera_speed * delta
+		camera_tracking_ship = false # Stop tracking ship on user input
 	if Input.is_action_pressed("MoveDown"):
 		Camera.global_position.y += camera_speed * delta
+		camera_tracking_ship = false # Stop tracking ship on user input
 	if Input.is_action_pressed("MoveLeft"):
 		Camera.global_position.x -= camera_speed * delta
+		camera_tracking_ship = false # Stop tracking ship on user input
 	if Input.is_action_pressed("MoveRight"):
 		Camera.global_position.x += camera_speed * delta
+		camera_tracking_ship = false # Stop tracking ship on user input
+	
+	if camera_tracking_ship:
+		Camera.global_position = Ship.global_position # Update camera position to follow ship
 
 	_update_visible_planets()
 
@@ -109,3 +122,13 @@ func _on_close_planet_info():
 	# Smoothly reset camera zoom
 	var camera_tween = get_tree().create_tween()
 	camera_tween.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT).tween_property(Camera, "zoom", Vector2(1, 1), TWEEN_DURATION)
+
+
+func _on_center_camera_button_pressed():
+	# Smoothly move camera to ship position
+	var camera_tween = get_tree().create_tween()
+	camera_tween.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT).tween_property(Camera, "global_position", Ship.global_position, TWEEN_DURATION)
+	camera_tween.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT).parallel().tween_property(Camera, "zoom", Vector2(MAX_CAMERA_ZOOM, MAX_CAMERA_ZOOM), TWEEN_DURATION)
+	await camera_tween.finished
+	camera_tracking_ship = true
+	
