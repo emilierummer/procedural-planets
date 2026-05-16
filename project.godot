@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 PlanetGenerator="*uid://7e0hxhf872tp"
+SaveData="*uid://bbraql6gvjf6x"
 
 [display]
 

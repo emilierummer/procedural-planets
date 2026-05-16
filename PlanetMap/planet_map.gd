@@ -125,10 +125,16 @@ func _on_close_planet_info():
 
 
 func _on_center_camera_button_pressed():
-	# Smoothly move camera to ship position
-	var camera_tween = get_tree().create_tween()
-	camera_tween.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT).tween_property(Camera, "global_position", Ship.global_position, TWEEN_DURATION)
-	camera_tween.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT).parallel().tween_property(Camera, "zoom", Vector2(MAX_CAMERA_ZOOM, MAX_CAMERA_ZOOM), TWEEN_DURATION)
-	await camera_tween.finished
 	camera_tracking_ship = true
 	
+
+func _on_start_travel(destination: Planet):
+	var distance = Ship.global_position.distance_to(destination.position)
+	var travel_time = distance / Ship.travel_speed
+	# Store start position, destination, and departure time
+	print("Starting travel to %s. Distance: %f, Travel time: %f seconds" % [destination.name, distance, travel_time])
+	SaveData.is_traveling = true
+	SaveData.travel_start_position = Ship.global_position
+	SaveData.travel_destination_position = destination.position
+	SaveData.travel_departure_time = Time.get_unix_time_from_system()
+	SaveData.save()

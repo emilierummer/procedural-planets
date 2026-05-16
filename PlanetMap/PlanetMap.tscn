@@ -10,6 +10,7 @@ script = ExtResource("1_4w114")
 [node name="Camera" type="Camera2D" parent="." unique_id=508318021]
 
 [node name="Ship" parent="." unique_id=476152209 instance=ExtResource("3_qont4")]
+z_index = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=788076910]
 
@@ -39,4 +40,5 @@ layout_mode = 2
 text = "Recenter Camera"
 
 [connection signal="close_planet_info" from="CanvasLayer/PlanetInfo" to="." method="_on_close_planet_info"]
+[connection signal="start_travel" from="CanvasLayer/PlanetInfo" to="." method="_on_start_travel"]
 [connection signal="pressed" from="CanvasLayer/TravelInfo/CenterButton" to="." method="_on_center_camera_button_pressed"]
