@@ -2,11 +2,15 @@
 
 [ext_resource type="Script" uid="uid://d3necre5jabjd" path="res://PlanetMap/planet_map.gd" id="1_4w114"]
 [ext_resource type="PackedScene" uid="uid://dien4r8hjb75n" path="res://PlanetMap/PlanetInfo.tscn" id="3_mr1mo"]
+[ext_resource type="PackedScene" uid="uid://dmrgjgxbok2gr" path="res://Ship/Ship.tscn" id="3_qont4"]
 
 [node name="PlanetMap" type="Node2D" unique_id=1615454139]
 script = ExtResource("1_4w114")
 
 [node name="Camera" type="Camera2D" parent="." unique_id=508318021]
+
+[node name="Ship" parent="." unique_id=476152209 instance=ExtResource("3_qont4")]
+z_index = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=788076910]
 
@@ -23,4 +27,18 @@ offset_top = -29.0
 offset_right = 60.0
 offset_bottom = 29.0
 
+[node name="TravelInfo" type="HBoxContainer" parent="CanvasLayer" unique_id=260810401]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="CenterButton" type="Button" parent="CanvasLayer/TravelInfo" unique_id=311522849]
+layout_mode = 2
+text = "Recenter Camera"
+
 [connection signal="close_planet_info" from="CanvasLayer/PlanetInfo" to="." method="_on_close_planet_info"]
+[connection signal="start_travel" from="CanvasLayer/PlanetInfo" to="." method="_on_start_travel"]
+[connection signal="pressed" from="CanvasLayer/TravelInfo/CenterButton" to="." method="_on_center_camera_button_pressed"]

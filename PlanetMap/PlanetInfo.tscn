@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://nahlkhsoibq0" path="res://PlanetMap/planet_info.gd" id="1_75aki"]
 
-[node name="PlanetInfo" type="PanelContainer" unique_id=2121761653]
+[node name="PlanetInfo" type="Container" unique_id=1527896549]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -10,43 +10,76 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_75aki")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=447471114]
+[node name="MainInfo" type="PanelContainer" parent="." unique_id=1682898169]
+unique_name_in_owner = true
 layout_mode = 2
 
-[node name="PlanetNameLabel" type="Label" parent="VBoxContainer" unique_id=1814742032]
+[node name="VBoxContainer" type="VBoxContainer" parent="MainInfo" unique_id=447471114]
+layout_mode = 2
+
+[node name="PlanetNameLabel" type="Label" parent="MainInfo/VBoxContainer" unique_id=1814742032]
 layout_mode = 2
 text = "Earth"
 
-[node name="LandCoverLabel" type="Label" parent="VBoxContainer" unique_id=934084126]
+[node name="LandCoverLabel" type="Label" parent="MainInfo/VBoxContainer" unique_id=934084126]
 layout_mode = 2
 text = "40% Land Cover"
 
-[node name="OceanDepthLabel" type="Label" parent="VBoxContainer" unique_id=1788795706]
+[node name="OceanDepthLabel" type="Label" parent="MainInfo/VBoxContainer" unique_id=1788795706]
 layout_mode = 2
 text = "Deep Oceans"
 
-[node name="TerrainLabel" type="Label" parent="VBoxContainer" unique_id=1175422867]
+[node name="TerrainLabel" type="Label" parent="MainInfo/VBoxContainer" unique_id=1175422867]
 layout_mode = 2
 text = "Flatlands"
 
-[node name="TemperatureLabel" type="Label" parent="VBoxContainer" unique_id=1851436468]
+[node name="TemperatureLabel" type="Label" parent="MainInfo/VBoxContainer" unique_id=1851436468]
 layout_mode = 2
 text = "Cold"
 
-[node name="GravityLabel" type="Label" parent="VBoxContainer" unique_id=2006195851]
+[node name="GravityLabel" type="Label" parent="MainInfo/VBoxContainer" unique_id=2006195851]
 layout_mode = 2
 text = "1Gs Gravity"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=124629533]
+[node name="HBoxContainer" type="HBoxContainer" parent="MainInfo/VBoxContainer" unique_id=124629533]
 layout_mode = 2
 
-[node name="CancelButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=291344784]
+[node name="CancelButton" type="Button" parent="MainInfo/VBoxContainer/HBoxContainer" unique_id=291344784]
 layout_mode = 2
 text = "Cancel"
 
-[node name="TravelButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=533330495]
+[node name="TravelButton" type="Button" parent="MainInfo/VBoxContainer/HBoxContainer" unique_id=533330495]
 layout_mode = 2
 text = "Travel"
 
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/CancelButton" to="." method="_on_cancel_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/TravelButton" to="." method="_on_travel_button_pressed"]
+[node name="ConfirmTravel" type="PanelContainer" parent="." unique_id=1943387956]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ConfirmTravel" unique_id=469016065]
+layout_mode = 2
+
+[node name="DestinationLabel" type="Label" parent="ConfirmTravel/VBoxContainer" unique_id=1873997931]
+layout_mode = 2
+text = "Ship is currently traveling to %o
+Go to %n instead?"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ConfirmTravel/VBoxContainer" unique_id=1041415120]
+layout_mode = 2
+
+[node name="ConfirmNo" type="Button" parent="ConfirmTravel/VBoxContainer/HBoxContainer" unique_id=32349837]
+unique_name_in_owner = true
+layout_mode = 2
+text = "No, keep going to %o"
+
+[node name="ConfirmYes" type="Button" parent="ConfirmTravel/VBoxContainer/HBoxContainer" unique_id=831116590]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Yes, change course to %n"
+
+[connection signal="pressed" from="MainInfo/VBoxContainer/HBoxContainer/CancelButton" to="." method="_on_cancel_button_pressed"]
+[connection signal="pressed" from="MainInfo/VBoxContainer/HBoxContainer/TravelButton" to="." method="_on_travel_button_pressed"]
+[connection signal="pressed" from="ConfirmTravel/VBoxContainer/HBoxContainer/ConfirmNo" to="." method="_on_confirm_no_pressed"]
+[connection signal="pressed" from="ConfirmTravel/VBoxContainer/HBoxContainer/ConfirmYes" to="." method="_on_confirm_yes_pressed"]

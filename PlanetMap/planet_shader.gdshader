@@ -1,6 +1,8 @@
 // TODO: Mostly AI generated, come back and verify this better once I learn more about shaders
 shader_type canvas_item;
 
+uniform float pixel_count: hint_range(1.0, 512.0, 1.0) = 64.0;
+
 uniform float rand_seed: hint_range(0.0, 1.0, 0.01);
 uniform sampler2D gradient;
 
@@ -22,7 +24,6 @@ uniform vec3 ocean_color_shallow: source_color = vec3(0.11, 0.26, 0.39); // Shal
 uniform float ocean_average_depth: hint_range(0.0, 1.0, 0.01) = 0.6; // Average ocean depth, 0 = shallow world, 1 = deep world
 uniform float ocean_depth_variation: hint_range(0.0, 1.0, 0.01) = 0.45; // Local ocean depth variation
 uniform float ocean_depth_contrast: hint_range(0.4, 3.0, 0.01) = 1.25; // How sharp/flat the ocean depth distribution feels
-
 
 float hash12(vec2 p) {
     vec2 seed = vec2(rand_seed, rand_seed * 1.731 + 0.37);
@@ -69,10 +70,9 @@ vec2 cloud_warp(vec2 p, vec2 seed_offset, float density) {
 	return (vec2(warp_x, warp_y) - 0.5) * warp_strength;
 }
 
-void fragment() {
-    vec2 p = UV * 2.0 - 1.0;
+vec4 get_color(vec2 uv, float disk_alpha) {
+    vec2 p = uv * 2.0 - 1.0;
     float radius = length(p);
-    float disk_alpha = texture(TEXTURE, UV).a;
 
     vec2 seed_offset = vec2(rand_seed * 17.0 + 0.31, rand_seed * 29.0 + 1.17);
     float planet_variation = hash12(seed_offset);
@@ -147,5 +147,20 @@ void fragment() {
     planet_color = mix(planet_color, planet_color * 1.12, limb * 0.08);
 
     float alpha = disk_alpha * limb;
-    COLOR = vec4(planet_color, alpha);
+    return vec4(planet_color, alpha);
+}
+
+void fragment() {
+    float disk_alpha = texture(TEXTURE, UV).a;
+    vec2 cell_uv;
+    if (pixel_count <= 1.0) {
+        cell_uv = UV;
+    } else {
+        float px = max(1.0, pixel_count);
+        cell_uv = (floor(UV * px) + 0.5) / px;
+    }
+    COLOR = get_color(cell_uv, disk_alpha);
+    if (COLOR.a < 0.75) {
+        discard;
+    }
 }

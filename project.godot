@@ -11,12 +11,14 @@ config_version=5
 [application]
 
 config/name="FocusGame"
+run/main_scene="uid://dariegj6bhqrd"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
 
 PlanetGenerator="*uid://7e0hxhf872tp"
+SaveData="*uid://bbraql6gvjf6x"
 
 [display]
 
