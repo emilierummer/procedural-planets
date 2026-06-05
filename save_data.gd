@@ -8,6 +8,8 @@ var is_traveling: bool = false
 var travel_start_position: Vector2 = Vector2.ZERO
 ## Travel: Destination position
 var travel_destination_position: Vector2 = Vector2.ZERO
+## Travel: Destination planet name
+var travel_destination_name: String = ""
 ## Travel: Departure time
 var travel_departure_time: float = 0.0
 
@@ -25,6 +27,7 @@ func save() -> void:
 	config.set_value(save_section, "is_traveling", is_traveling)
 	config.set_value(save_section, "travel_start_position", travel_start_position)
 	config.set_value(save_section, "travel_destination_position", travel_destination_position)
+	config.set_value(save_section, "travel_destination_name", travel_destination_name)
 	config.set_value(save_section, "travel_departure_time", travel_departure_time)
 
 	var err: int = config.save(SAVE_FILE_PATH)
@@ -41,6 +44,7 @@ func load() -> void:
 		is_traveling = config.get_value(save_section, "is_traveling", false)
 		travel_start_position = config.get_value(save_section, "travel_start_position", Vector2.ZERO) as Vector2
 		travel_destination_position = config.get_value(save_section, "travel_destination_position", Vector2.ZERO) as Vector2
+		travel_destination_name = config.get_value(save_section, "travel_destination_name", "") as String
 		travel_departure_time = config.get_value(save_section, "travel_departure_time", 0.0)
 	else:
 		print("No save data found, starting with default values.")

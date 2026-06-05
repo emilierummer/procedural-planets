@@ -136,6 +136,7 @@ func _on_start_travel(destination: Planet):
 	SaveData.is_traveling = true
 	SaveData.travel_start_position = Ship.global_position
 	SaveData.travel_destination_position = destination.position
+	SaveData.travel_destination_name = destination.name
 	SaveData.travel_departure_time = Time.get_unix_time_from_system()
 	SaveData.save()
 	# Move camera to follow ship during travel
