@@ -138,3 +138,8 @@ func _on_start_travel(destination: Planet):
 	SaveData.travel_destination_position = destination.position
 	SaveData.travel_departure_time = Time.get_unix_time_from_system()
 	SaveData.save()
+	# Move camera to follow ship during travel
+	%PlanetInfo.hide()
+	focused_planet = false
+	camera_tracking_ship = true
+	Camera.zoom = Vector2(1, 1) # Reset zoom when starting travel
